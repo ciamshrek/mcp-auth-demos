@@ -1,0 +1,58 @@
+# GPT GENERATED GITIGNORE :D 
+
+# === Node.js ===
+**/node_modules/
+**/dist/
+**/build/
+**/.next/
+**/.out/
+**/.turbo/
+**/.vercel/
+
+# === TypeScript ===
+**/*.tsbuildinfo
+
+# === Logs ===
+**/*.log
+**/npm-debug.log*
+**/yarn-debug.log*
+**/yarn-error.log*
+**/pnpm-debug.log*
+
+# === Env & Secrets ===
+**/.env
+**/.env.*.local
+**/*.local
+
+# === Prisma ===
+**/prisma/dev.db
+**/prisma/dev.db-journal
+**/prisma/migrations/
+
+# === OS cruft ===
+.DS_Store
+Thumbs.db
+
+# === Editors ===
+.vscode/
+.idea/
+
+# === Misc temp ===
+**/*.swp
+**/*.swo
+**/*.tmp
+**/*.pid
+**/*.sqlite
+**/*.sqlite-journal
+
+# === Lockfiles ===
+# Remove below if you *want* to commit lockfiles (often recommended!)
+**/package-lock.json
+**/yarn.lock
+**/pnpm-lock.yaml
+
+# === SSE cache, custom stuff ===
+**/session-storage.ts
+
+# === Coverage ===
+**/coverage/
