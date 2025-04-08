@@ -4,7 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "tsx watch server.ts"
+    "dev": "tsx watch src/server.ts",
+    "prisma:generate": "prisma generate",
+    "prisma:migrate": "prisma migrate dev"
   },
   "keywords": [],
   "author": "",
@@ -12,6 +14,7 @@
   "dependencies": {
     "@auth0/auth0-api-js": "^1.0.1",
     "@modelcontextprotocol/sdk": "^1.8.0",
+    "@prisma/client": "^6.5.0",
     "dotenv": "^16.4.7",
     "fastify-plugin": "^5.0.1",
     "zod": "^3.24.2"
@@ -19,6 +22,7 @@
   "devDependencies": {
     "@types/node": "^22.14.0",
     "fastify": "^5.2.2",
+    "prisma": "^6.5.0",
     "tsx": "^4.19.3",
     "typescript": "^5.8.3"
   }
