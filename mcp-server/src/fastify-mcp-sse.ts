@@ -17,7 +17,7 @@ type MCPSSEPluginOptions = {
 export const fastifyMCPSSE: FastifyPluginCallback<MCPSSEPluginOptions> = (
   fastify,
   options,
-  done,
+  done
 ) => {
   const {
     server,
@@ -26,35 +26,58 @@ export const fastifyMCPSSE: FastifyPluginCallback<MCPSSEPluginOptions> = (
     messagesEndpoint = "/messages",
   } = options;
 
-  fastify.get(sseEndpoint, { preHandler: fastify.requireAuth() }, async (request, reply) => {
-    
-    const authContext = request.user as Required<Token>;
+  fastify.get(
+    sseEndpoint,
+    { preHandler: fastify.requireAuth() },
+    async (request, reply) => {
+      const authContext = request.user as Required<Token>;
 
-    await authContextStorage.run(authContext, async () => {
-      const transport = new SSEServerTransport(messagesEndpoint, reply.raw);
-      sessions.add(transport.sessionId, transport);
-  
-      reply.raw.on("close", () => sessions.remove(transport.sessionId));
-      fastify.log.info("SSE session started", { sessionId: transport.sessionId });
-  
-      await server.connect(transport);
-    });
-  });
-  
+      await authContextStorage.run(authContext, async () => {
+        const transport = new SSEServerTransport(messagesEndpoint, reply.raw);
+        sessions.add(transport.sessionId, transport);
+
+        reply.raw.on("close", () => sessions.remove(transport.sessionId));
+        fastify.log.info("SSE session started", {
+          sessionId: transport.sessionId,
+        });
+
+        await server.connect(transport);
+      });
+    }
+  );
+
   // Message Handler
-  fastify.post(messagesEndpoint, { preHandler: fastify.requireAuth() }, async (request, reply) => {
-    const sessionId = extractSessionId(request);
-    if (!sessionId) return reply.code(400).send({ error: "Missing sessionId" });
-  
-    const transport = sessions.get(sessionId);
-    if (!transport) return reply.code(400).send({ error: "Session not found" });
-  
-    const authContext = request.user as Required<Token>;
-  
-    await authContextStorage.run(authContext, async () => {
-      await transport.handlePostMessage(request.raw, reply.raw, request.body);
-    });
-  });
+  fastify.post(
+    messagesEndpoint,
+    { preHandler: fastify.requireAuth() },
+    async (request, reply) => {
+      const sessionId = extractSessionId(request);
+      if (!sessionId) {
+        fastify.log.info("Denying no sessionId");
+        return reply.code(400).send({ error: "Missing sessionId" });
+      }
+
+      const transport = sessions.get(sessionId);
+      if (!transport) {
+        fastify.log.info("Denying sesion not found");
+        return reply.code(400).send({ error: "Session not found" });
+      }
+
+      const authContext = request.user as Required<Token>;
+
+      await authContextStorage.run(authContext, async () => {
+        try {
+          await transport.handlePostMessage(
+            request.raw,
+            reply.raw,
+            request.body
+          );
+        } catch (err) {
+          fastify.log.error("While executing handlePostMessage", err);
+        }
+      });
+    }
+  );
 
   return done();
 };

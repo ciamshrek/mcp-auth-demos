@@ -84,12 +84,14 @@ async function auth0FastifApi(fastify: FastifyInstance, options: Auth0FastifyApi
       const accessToken = getToken(request);
 
       if (!accessToken) {
+        fastify.log.debug("No access token");
         return replyWithError(reply, 400, 'invalid_request', 'No access token was provided in this request');
       }
 
       try {
         const token: Token = await apiClient.verifyAccessToken({ accessToken });
         if (opts.scopes && !validateScopes(token, opts.scopes)) {
+          fastify.log.debug("In-sufficient scope");
           return replyWithError(reply, 403, 'insufficient_scope', 'Insufficient scopes');
         }
 
@@ -99,6 +101,7 @@ async function auth0FastifApi(fastify: FastifyInstance, options: Auth0FastifyApi
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         if ((error as any).code === 'verify_access_token_error') {
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          fastify.log.debug("Failed to verify AT");
           return replyWithError(reply, 401, 'invalid_token', (error as any).message);
         }
 
