@@ -122,7 +122,9 @@ async function discoverProtectedResourceMetadata(
   const resourceMetadata = await fetchMetadata(metadataUrl);
 
   if (resourceMetadata.resource !== resourceUrl) {
-    throw new Error("Resource does not match metadata in origin");
+    throw new Error(
+      `Resource does not match metadata in origin, ${resourceMetadata.resource} != ${resourceUrl}`,
+    );
   }
 
   return resourceMetadata;
