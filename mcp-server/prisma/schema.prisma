@@ -8,14 +8,14 @@ generator client {
   provider = "prisma-client-js"
 }
 
-datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
-}
 // datasource db {
-//   provider = "sqlite"
-//   url      = "file:./dev.db"
-// }
+//   provider = "postgresql"
+//   url      = env("DATABASE_URL")
+//}
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
 
 model User {
   id    String   @id @default(cuid())
@@ -26,7 +26,7 @@ model Todo {
   id          String   @id @default(cuid())
   title       String
   description String?
-  tags        String[]
+  tags        String
   completed   Boolean  @default(false)
   createdAt   DateTime @default(now())
   userId      String
