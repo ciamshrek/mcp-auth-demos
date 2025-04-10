@@ -52,7 +52,8 @@ Thumbs.db
 **/pnpm-lock.yaml
 
 # === SSE cache, custom stuff ===
-**/session-storage.ts
+# unsure what this was
+# **/session-storage.ts
 
 # === Coverage ===
 **/coverage/

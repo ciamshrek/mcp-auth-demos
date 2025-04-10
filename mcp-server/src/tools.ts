@@ -7,11 +7,7 @@ const prisma = new PrismaClient();
 export const createTodoSchema = {
   title: z.string().describe("Title for the Todo"),
   description: z.string().describe("The task to perform").optional(),
-  tags: z
-    .array(
-      z.string().describe("A hashtag associated with it like #job #personal")
-    )
-    .optional(),
+  tags: z.string().describe("A hashtag associated with it like #job #personal").optional(),
 } as const;
 
 export const createTodoTool = withAuthz<typeof createTodoSchema>(
@@ -23,7 +19,7 @@ export const createTodoTool = withAuthz<typeof createTodoSchema>(
       data: {
         title,
         description,
-        tags: tags ?? [],
+        tags: tags ?? "",
         user: {
           connectOrCreate: {
             create: {
@@ -51,8 +47,6 @@ export const searchTodoTool = withAuthz(
   async ({ search, tags }, { user }) => {
     console.info("Searching todos");
 
-    const tagArray = tags ? tags.split(",") : [];
-
     const todos = await prisma.todo.findMany({
       where: {
         userId: user.sub,
@@ -65,10 +59,11 @@ export const searchTodoTool = withAuthz(
                 ],
               }
             : {},
-          tagArray.length
+          tags
             ? {
                 tags: {
-                  hasSome: tagArray,
+                  contains: tags,
+                  mode: "insensitive"
                 },
               }
             : {},
@@ -87,7 +82,7 @@ export const updateTodoSchema = {
   id: z.string().describe("ID of the Todo to update"),
   title: z.string().describe("Updated title").optional(),
   description: z.string().describe("Updated task").optional(),
-  tags: z.array(z.string()).describe("Updated tags").optional(),
+  tags: z.string().describe("Updated tags").optional(),
   completed: z.boolean().describe("Mark as complete or not").optional(),
 } as const;
 

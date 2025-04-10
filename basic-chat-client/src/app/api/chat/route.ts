@@ -1,6 +1,6 @@
 import { getTokenSet } from "@/app/auth/get-tokenset";
 import { mcp_server_installer } from "@/app/tools/mcp-server-helper";
-import { openai } from "@ai-sdk/openai";
+import { anthropic } from "@ai-sdk/anthropic";
 import { experimental_createMCPClient, streamText } from "ai";
 
 // Allow streaming responses up to 30 seconds
@@ -42,7 +42,7 @@ export async function POST(req: Request) {
   }
 
   const result = streamText({
-    model: openai("gpt-4o"),
+    model: anthropic("claude-3-7-sonnet-latest"),
     messages,
     maxSteps: 10,
     toolCallStreaming: true,
